@@ -5,18 +5,10 @@
         </h2>
     </x-slot>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Left Panel: Template Info -->
+    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div class="md:col-span-2 space-y-6">
             <div class="bg-white shadow rounded-lg p-6">
                 <h2 class="text-xl font-semibold text-gray-700 mb-4">{{ $template->title }}</h2>
-
-                @if ($template->description)
-                    <div class="mb-4">
-                        <h3 class="text-sm text-gray-600 font-medium">Description</h3>
-                        <p class="text-gray-700">{{ $template->description }}</p>
-                    </div>
-                @endif
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                     <div>
@@ -42,10 +34,16 @@
                             @endforelse
                         </div>
                     </div>
+
+                    @if ($template->description)
+                        <div class="mb-4">
+                            <h3 class="text-sm text-gray-600 font-medium">Description</h3>
+                            <p class="text-gray-700">{{ $template->description }}</p>
+                        </div>
+                    @endif
                 </div>
             </div>
 
-            <!-- Document Preview -->
             <div class="bg-white shadow rounded-lg p-6">
                 <h3 class="text-sm font-semibold text-gray-600 mb-4">Document Preview</h3>
 
@@ -68,7 +66,6 @@
                 @endif
             </div>
 
-            <!-- Action (Principal Role Logic) -->
             @if (Auth::user()->hasRole('principal'))
                 <div>
                     <button type="button"
@@ -78,7 +75,6 @@
                     </button>
                 </div>
 
-                <!-- Modal -->
                 <div class="modal fade" id="processModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog">
                         <form action="{{ route('templates.preview', $template) }}" method="POST"
@@ -116,53 +112,54 @@
                     </div>
                 </div>
             @endif
-        </div>
 
-        <!-- Right Panel: Placeholder Validation -->
-        <div class="bg-white shadow rounded-lg p-6 space-y-6">
-            <div>
-                <h3 class="text-sm font-semibold text-gray-600 mb-3">Standard Placeholders</h3>
-                <ul class="divide-y divide-gray-200">
-                    @foreach (['School Name', 'School Address', 'School Affiliation No.', 'School Code', 'School Email', 'School Contact', 'School Website', 'Principal Name'] as $placeholder)
-                        <li class="flex items-center justify-between py-2 text-sm text-gray-700">
-                            {{ $placeholder }}
-                            @if (in_array($placeholder, $template->placeholder_mapping))
-                                <span class="text-green-500"><i class="fas fa-check-circle"></i></span>
-                            @else
-                                <span class="text-gray-400"><i class="fas fa-times-circle"></i></span>
-                            @endif
-                        </li>
-                    @endforeach
-                </ul>
+            <div class="bg-white shadow rounded-lg p-6 space-y-6">
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-600 mb-3">Standard Placeholders</h3>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach (['School Name', 'School Address', 'School Affiliation No.', 'School Code', 'School Email', 'School Contact', 'School Website', 'Principal Name'] as $placeholder)
+                            <span class="flex items-center gap-2 px-3 py-1 text-sm rounded-full 
+                                         {{ in_array($placeholder, $template->placeholder_mapping) 
+                                             ? 'bg-green-100 text-green-800' 
+                                             : 'bg-gray-100 text-gray-500' }}">
+                                <i class="fas {{ in_array($placeholder, $template->placeholder_mapping) 
+                                                ? 'fa-check-circle' 
+                                                : 'fa-times-circle' }}"></i>
+                                {{ $placeholder }}
+                            </span>
+                        @endforeach
+                    </div>
+                </div>
+            
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-600 mb-3">Event-Related Placeholders</h3>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach (['Event Date', 'Venue', 'Time', 'Subject'] as $placeholder)
+                            <span class="flex items-center gap-2 px-3 py-1 text-sm rounded-full 
+                                         {{ in_array($placeholder, $template->placeholder_mapping) 
+                                             ? 'bg-green-100 text-green-800' 
+                                             : 'bg-gray-100 text-gray-500' }}">
+                                <i class="fas {{ in_array($placeholder, $template->placeholder_mapping) 
+                                                ? 'fa-check-circle' 
+                                                : 'fa-times-circle' }}"></i>
+                                {{ $placeholder }}
+                            </span>
+                        @endforeach
+                    </div>
+                </div>
+            
+                @if (Auth::user()->hasRole('super_admin'))
+                    <form action="{{ route('templates.destroy', $template) }}" method="POST" class="pt-4 border-t">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                            class="w-full text-sm px-4 py-2 bg-red-600 text-white rounded shadow hover:bg-red-700 transition"
+                            onclick="return confirm('Are you sure you want to remove this template?')">
+                            <i class="fas fa-trash-alt mr-1"></i> Remove Template
+                        </button>
+                    </form>
+                @endif
             </div>
-
-            <div>
-                <h3 class="text-sm font-semibold text-gray-600 mb-3">Event-Related Placeholders</h3>
-                <ul class="divide-y divide-gray-200">
-                    @foreach (['Event Date', 'Venue', 'Time', 'Subject'] as $placeholder)
-                        <li class="flex items-center justify-between py-2 text-sm text-gray-700">
-                            {{ $placeholder }}
-                            @if (in_array($placeholder, $template->placeholder_mapping))
-                                <span class="text-green-500"><i class="fas fa-check-circle"></i></span>
-                            @else
-                                <span class="text-gray-400"><i class="fas fa-times-circle"></i></span>
-                            @endif
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
-
-            @if (Auth::user()->hasRole('super_admin'))
-                <form action="{{ route('templates.destroy', $template) }}" method="POST" class="pt-4 border-t">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                        class="w-full text-sm px-4 py-2 bg-red-600 text-white rounded shadow hover:bg-red-700 transition"
-                        onclick="return confirm('Are you sure you want to remove this template?')">
-                        <i class="fas fa-trash-alt mr-1"></i> Remove Template
-                    </button>
-                </form>
-            @endif
         </div>
     </div>
 </x-app-layout>
