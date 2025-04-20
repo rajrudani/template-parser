@@ -16,8 +16,6 @@ class ProcessedDocumentController extends Controller
     public function __construct(DocumentParserService $parserService)
     {
         $this->parserService = $parserService;
-        $this->middleware('auth');
-        $this->middleware('role:principal')->only(['edit', 'update']);
     }
     
     /**
