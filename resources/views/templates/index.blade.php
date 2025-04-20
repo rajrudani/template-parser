@@ -1,33 +1,30 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            Templates
-        </h2>
-    </x-slot>
-
-    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Document Templates</h1>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl
+                text-gray-800 dark:text-gray-200 leading-tight">
+                Document Templates
+            </h2>
             @if (Auth::user()->hasRole('super_admin'))
                 <a href="{{ route('templates.create') }}"
-                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition">
+                    class="inline-flex items-center px-5 py-3 bg-blue-600 text-white text-sm font-semibold rounded-md shadow">
                     <i class="fas fa-plus mr-2"></i> Upload New Template
                 </a>
             @endif
         </div>
+    </x-slot>
 
+    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($templates as $template)
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md flex flex-col h-full">
                     <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
                         <h5 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $template->title }}</h5>
-                        <span class="bg-blue-500 text-white text-xs font-medium px-2.5 py-0.5 rounded">
-                            {{ pathinfo($template->filename, PATHINFO_EXTENSION) }}
-                        </span>
                     </div>
 
                     <div class="p-4 flex-1">
                         @if ($template->description)
+                            <small class="text-gray-500 dark:text-gray-400 font-medium">Description:</small>
                             <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">{{ $template->description }}</p>
                         @endif
 
@@ -47,7 +44,7 @@
                     <div
                         class="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center space-x-2">
                         <a href="{{ route('templates.show', $template) }}"
-                            class="text-sm px-3 py-1.5 border rounded-lg text-blue-600 border-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900 transition">
+                            class="text-sm px-3 py-1.5 rounded-lg text-blue-600 bg-yellow-500 hover:bg-white-100 transition">
                             <i class="fas fa-eye mr-1"></i> View Details
                         </a>
 
@@ -112,8 +109,7 @@
                                 onsubmit="return confirm('Are you sure you want to remove this template?')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit"
-                                    class="text-sm px-3 py-1.5 border border-red-500 text-red-600 rounded-lg hover:bg-red-100 dark:hover:bg-red-900 transition">
+                                <button type="submit" class="text-sm px-3 py-1.5 bg-red-600 rounded-lg transition">
                                     <i class="fas fa-trash-alt mr-1"></i> Remove
                                 </button>
                             </form>
