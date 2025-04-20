@@ -1,83 +1,74 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            Create New Template
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl
+                text-gray-800 dark:text-gray-200 leading-tight">
+                Create Template
+            </h2>
+        </div>
     </x-slot>
 
-    <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div class="bg-white dark:bg-gray-900 shadow-md rounded-xl overflow-hidden">
-            <div class="px-6 py-5">
-                <form action="{{ route('templates.store') }}" method="POST" enctype="multipart/form-data"
-                    class="space-y-6">
-                    @csrf
+            <form action="{{ route('templates.store') }}" method="POST" enctype="multipart/form-data"
+                class="space-y-6">
+                @csrf
 
-                    <div>
-                        <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Template
-                            Title</label>
-                        <input type="text" name="title" id="title"
-                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md shadow-sm @error('title') border-red-500 @enderror"
-                            value="{{ old('title') }}" required>
-                        @error('title')
-                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Template
+                        Title</label>
+                    <input type="text" name="title" id="title"
+                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md shadow-sm @error('title') border-red-500 @enderror"
+                        value="{{ old('title') }}" required>
+                    @error('title')
+                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
 
-                    <div>
-                        <label for="description"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description
-                            (Optional)</label>
-                        <textarea name="description" id="description" rows="3"
-                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md shadow-sm @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
-                        @error('description')
-                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                <div>
+                    <label for="description"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description
+                        (Optional)</label>
+                    <textarea name="description" id="description" rows="3"
+                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md shadow-sm @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
+                    @error('description')
+                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
 
-                    <div>
-                        <label for="document"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Document File</label>
-                        <input type="file" name="document" id="document"
-                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md shadow-sm @error('document') border-red-500 @enderror"
-                            required>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Supported formats: PDF, DOCX, DOC, TXT
-                            (Max: 10MB)</p>
-                        @error('document')
-                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                <div>
+                    <label for="document"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Document File</label>
+                    <input type="file" name="document" id="document"
+                        class="mt-1 block w-full border-gray-300 py-3 px-3 dark:bg-gray-800 dark:text-white rounded-md shadow-sm @error('document') border-red-500 @enderror"
+                        required>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Supported formats: PDF, DOCX, DOC, TXT (Max: 10MB)</p>
+                    @error('document')
+                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
 
-                    <div
-                        class="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 rounded-md">
-                        <h4 class="font-semibold text-gray-700 dark:text-gray-200 mb-3">Supported Placeholders</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
-                            <ul class="space-y-1">
-                                <li>School Name</li>
-                                <li>School Address</li>
-                                <li>School Affiliation No.</li>
-                                <li>School Code</li>
-                                <li>School Email</li>
-                                <li>School Contact</li>
-                            </ul>
-                            <ul class="space-y-1">
-                                <li>School Website</li>
-                                <li>Principal Name</li>
-                                <li>Event Date</li>
-                                <li>Venue</li>
-                                <li>Time</li>
-                                <li>Subject</li>
-                            </ul>
-                        </div>
+                <div class="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-5 rounded-md">
+                    <h4 class="font-semibold text-gray-700 dark:text-gray-200 mb-4">Supported Placeholders</h4>
+                    <div class="flex flex-wrap gap-3">
+                        @foreach([
+                            'School Name', 'School Address', 'School Affiliation No.', 'School Code', 'School Email',
+                            'School Contact', 'School Website', 'Principal Name', 'Event Date', 'Venue', 'Time', 'Subject'
+                        ] as $placeholder)
+                            <span class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-full text-sm shadow-sm">
+                                {{ $placeholder }}
+                            </span>
+                        @endforeach
                     </div>
+                </div>
 
-                    <div>
-                        <button type="submit"
-                            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                            <i class="fas fa-upload mr-2"></i> Upload Template
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <div>
+                    <button type="submit"
+                        class="inline-flex items-center px-5 py-3 bg-blue-600 text-white text-sm font-semibold rounded-md shadow">
+                        <i class="fas fa-upload mr-2"></i> Upload Template
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
     <script>
