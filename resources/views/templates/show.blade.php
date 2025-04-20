@@ -153,7 +153,7 @@
                         @csrf
                         @method('DELETE')
                         <button type="submit"
-                            class="w-full text-sm px-4 py-2 bg-red-600 text-white rounded shadow hover:bg-red-700 transition"
+                            class="text-sm px-4 py-2 bg-red-600 text-white rounded shadow hover:bg-red-700 transition"
                             onclick="return confirm('Are you sure you want to remove this template?')">
                             <i class="fas fa-trash-alt mr-1"></i> Remove Template
                         </button>
