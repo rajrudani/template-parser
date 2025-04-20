@@ -1,173 +1,168 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            Template Details
+        </h2>
+    </x-slot>
 
-@section('title', 'Template Details')
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Left Panel: Template Info -->
+        <div class="md:col-span-2 space-y-6">
+            <div class="bg-white shadow rounded-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">{{ $template->title }}</h2>
 
-@section('content')
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center">
-            <h1>Template Details</h1>
-            <a href="{{ route('templates.index') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Templates
-            </a>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-md-8">
-        <div class="card mb-4">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">{{ $template->title }}</h5>
-            </div>
-            <div class="card-body">
-                @if($template->description)
-                    <div class="mb-3">
-                        <h6>Description:</h6>
-                        <p>{{ $template->description }}</p>
+                @if ($template->description)
+                    <div class="mb-4">
+                        <h3 class="text-sm text-gray-600 font-medium">Description</h3>
+                        <p class="text-gray-700">{{ $template->description }}</p>
                     </div>
-                    <hr>
                 @endif
-                
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <h6>File Information:</h6>
-                        <dl class="row">
-                            <dt class="col-sm-4">Filename:</dt>
-                            <dd class="col-sm-8">{{ $template->original_filename }}</dd>
-                            
-                            <dt class="col-sm-4">File Type:</dt>
-                            <dd class="col-sm-8">{{ strtoupper(pathinfo($template->original_filename, PATHINFO_EXTENSION)) }}</dd>
-                            
-                            <dt class="col-sm-4">Uploaded:</dt>
-                            <dd class="col-sm-8">{{ $template->created_at->format('M d, Y H:i') }}</dd>
-                        </dl>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-600 mb-2">File Information</h4>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li><strong>Filename:</strong> {{ $template->original_filename }}</li>
+                            <li><strong>File Type:</strong>
+                                {{ strtoupper(pathinfo($template->original_filename, PATHINFO_EXTENSION)) }}</li>
+                            <li><strong>Uploaded:</strong> {{ $template->created_at->format('M d, Y H:i') }}</li>
+                        </ul>
                     </div>
-                    <div class="col-md-6">
-                        <h6>Placeholders Detected:</h6>
-                        <div class="d-flex flex-wrap mt-2">
+
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-600 mb-2">Detected Placeholders</h4>
+                        <div class="flex flex-wrap gap-2">
                             @forelse($template->placeholder_mapping as $placeholder)
-                                <span class="badge bg-light text-dark placeholder-badge">
+                                <span
+                                    class="px-2 py-1 text-xs rounded bg-gray-100 border border-gray-300 text-gray-800">
                                     {{ $placeholder }}
                                 </span>
                             @empty
-                                <span class="text-muted">No placeholders detected</span>
+                                <p class="text-gray-400 text-sm">No placeholders detected.</p>
                             @endforelse
                         </div>
                     </div>
                 </div>
-                
-                <hr>
-                
-                <div class="card mb-3">
-                    <div class="card-header bg-light">
-                        <h6 class="mb-0">Preview</h6>
+            </div>
+
+            <!-- Document Preview -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-sm font-semibold text-gray-600 mb-4">Document Preview</h3>
+
+                @php
+                    $ext = strtolower(pathinfo($template->original_filename, PATHINFO_EXTENSION));
+                @endphp
+
+                @if (in_array($ext, ['pdf', 'doc', 'docx']))
+                    <div class="text-center py-6">
+                        <i class="fas fa-file-{{ $ext === 'pdf' ? 'pdf' : 'word' }} fa-5x text-indigo-500 mb-3"></i>
+                        <p class="text-sm text-gray-600">
+                            {{ strtoupper($ext) }} Document Uploaded
+                        </p>
                     </div>
-                    <div class="card-body">
-                        @if(in_array(pathinfo($template->original_filename, PATHINFO_EXTENSION), ['pdf', 'docx', 'doc']))
-                            <div class="text-center">
-                                <i class="fas fa-file{{ pathinfo($template->original_filename, PATHINFO_EXTENSION) === 'pdf' ? '-pdf' : '-word' }} fa-5x text-primary mb-3"></i>
-                                <p>{{ pathinfo($template->original_filename, PATHINFO_EXTENSION) === 'pdf' ? 'PDF' : 'Word' }} document</p>
-                            </div>
-                        @elseif(pathinfo($template->original_filename, PATHINFO_EXTENSION) === 'txt')
-                            <div class="preview-frame">
-                                <pre>{{ Storage::disk('public')->get($template->file_path) }}</pre>
-                            </div>
-                        @endif
+                @elseif($ext === 'txt')
+                    <div
+                        class="bg-gray-100 border rounded p-4 max-h-80 overflow-auto text-sm text-gray-700 whitespace-pre-wrap">
+                        {{ Storage::disk('public')->get($template->file_path) }}
                     </div>
+                @endif
+            </div>
+
+            <!-- Action (Principal Role Logic) -->
+            @if (Auth::user()->hasRole('principal'))
+                <div>
+                    <button type="button"
+                        class="w-full sm:w-auto px-5 py-2.5 bg-green-600 text-white text-sm font-medium rounded shadow hover:bg-green-700 transition"
+                        data-bs-toggle="modal" data-bs-target="#processModal">
+                        <i class="fas fa-magic mr-2"></i> Process Template for My School
+                    </button>
                 </div>
-                
-                {{-- @if(Auth::user()->hasRole('principal')) --}}
-                    <div class="d-grid">
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#processModal">
-                            <i class="fas fa-magic"></i> Process Template for My School
-                        </button>
-                    </div>
-                    
-                    <!-- Process Modal -->
-                    <div class="modal fade" id="processModal" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Process Template: {{ $template->title }}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <form action="{{ route('templates.preview', $template) }}" method="POST">
-                                    @csrf
-                                    <div class="modal-body">
-                                        <input type="hidden" name="school_id" value="1">
-                                        {{-- <input type="hidden" name="school_id" value="{{ Auth::user()->school_id }}"> --}}
-                                        
-                                        <div class="mb-3">
-                                            <label for="event_id" class="form-label">Select Event (Optional)</label>
-                                            <select class="form-select" name="event_id" id="event_id">
-                                                <option value="">No Event</option>
-                                                {{-- @foreach(Auth::user()->school->events as $event)
-                                                    <option value="{{ $event->id }}">{{ $event->event_name }} ({{ $event->event_date->format('d/m/Y') }})</option>
-                                                @endforeach --}}
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn btn-primary">Process Document</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                {{-- @endif --}}
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header bg-light">
-                <h5 class="mb-0">Placeholder Validation</h5>
-            </div>
-            <div class="card-body">
-                <h6>Standard Placeholders</h6>
-                <ul class="list-group mb-3">
-                    @foreach(['School Name', 'School Address', 'School Affiliation No.', 'School Code', 'School Email', 'School Contact', 'School Website', 'Principal Name'] as $standardPlaceholder)
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ $standardPlaceholder }}
-                            @if(in_array($standardPlaceholder, $template->placeholder_mapping))
-                                <span class="badge bg-success rounded-pill"><i class="fas fa-check"></i></span>
-                            @else
-                                <span class="badge bg-secondary rounded-pill"><i class="fas fa-times"></i></span>
-                            @endif
-                        </li>
-                    @endforeach
-                </ul>
-                
-                <h6>Event-related Placeholders</h6>
-                <ul class="list-group">
-                    @foreach(['Event Date', 'Venue', 'Time', 'Subject'] as $eventPlaceholder)
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ $eventPlaceholder }}
-                            @if(in_array($eventPlaceholder, $template->placeholder_mapping))
-                                <span class="badge bg-success rounded-pill"><i class="fas fa-check"></i></span>
-                            @else
-                                <span class="badge bg-secondary rounded-pill"><i class="fas fa-times"></i></span>
-                            @endif
-                        </li>
-                    @endforeach
-                </ul>
-                
-                {{-- @if(Auth::user()->hasRole('super_admin')) --}}
-                    <div class="mt-4">
-                        <form action="{{ route('templates.destroy', $template) }}" method="POST" class="d-grid">
+
+                <!-- Modal -->
+                <div class="modal fade" id="processModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form action="{{ route('templates.preview', $template) }}" method="POST"
+                            class="modal-content">
                             @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to remove this template?')">
-                                <i class="fas fa-trash-alt"></i> Remove Template
-                            </button>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Process Template: {{ $template->title }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body space-y-4">
+                                <input type="hidden" name="school_id" value="1">
+                                {{-- <input type="hidden" name="school_id" value="{{ Auth::user()->school_id }}"> --}}
+
+                                <div>
+                                    <label for="event_id" class="block text-sm font-medium text-gray-700">Select Event
+                                        (Optional)</label>
+                                    <select id="event_id" name="event_id"
+                                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm text-sm">
+                                        <option value="">No Event</option>
+                                        {{-- @foreach (Auth::user()->school->events as $event)
+                                        <option value="{{ $event->id }}">{{ $event->event_name }} ({{ $event->event_date->format('d/m/Y') }})</option>
+                                    @endforeach --}}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer flex justify-end gap-2 px-4 py-3">
+                                <button type="button" class="px-4 py-2 bg-gray-200 rounded text-sm hover:bg-gray-300"
+                                    data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit"
+                                    class="px-4 py-2 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700">Process
+                                    Document</button>
+                            </div>
                         </form>
                     </div>
-                {{-- @endif --}}
+                </div>
+            @endif
+        </div>
+
+        <!-- Right Panel: Placeholder Validation -->
+        <div class="bg-white shadow rounded-lg p-6 space-y-6">
+            <div>
+                <h3 class="text-sm font-semibold text-gray-600 mb-3">Standard Placeholders</h3>
+                <ul class="divide-y divide-gray-200">
+                    @foreach (['School Name', 'School Address', 'School Affiliation No.', 'School Code', 'School Email', 'School Contact', 'School Website', 'Principal Name'] as $placeholder)
+                        <li class="flex items-center justify-between py-2 text-sm text-gray-700">
+                            {{ $placeholder }}
+                            @if (in_array($placeholder, $template->placeholder_mapping))
+                                <span class="text-green-500"><i class="fas fa-check-circle"></i></span>
+                            @else
+                                <span class="text-gray-400"><i class="fas fa-times-circle"></i></span>
+                            @endif
+                        </li>
+                    @endforeach
+                </ul>
             </div>
+
+            <div>
+                <h3 class="text-sm font-semibold text-gray-600 mb-3">Event-Related Placeholders</h3>
+                <ul class="divide-y divide-gray-200">
+                    @foreach (['Event Date', 'Venue', 'Time', 'Subject'] as $placeholder)
+                        <li class="flex items-center justify-between py-2 text-sm text-gray-700">
+                            {{ $placeholder }}
+                            @if (in_array($placeholder, $template->placeholder_mapping))
+                                <span class="text-green-500"><i class="fas fa-check-circle"></i></span>
+                            @else
+                                <span class="text-gray-400"><i class="fas fa-times-circle"></i></span>
+                            @endif
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+
+            @if (Auth::user()->hasRole('super_admin'))
+                <form action="{{ route('templates.destroy', $template) }}" method="POST" class="pt-4 border-t">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                        class="w-full text-sm px-4 py-2 bg-red-600 text-white rounded shadow hover:bg-red-700 transition"
+                        onclick="return confirm('Are you sure you want to remove this template?')">
+                        <i class="fas fa-trash-alt mr-1"></i> Remove Template
+                    </button>
+                </form>
+            @endif
         </div>
     </div>
-</div>
-@endsection
+</x-app-layout>

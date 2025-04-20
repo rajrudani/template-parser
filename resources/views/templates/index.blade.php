@@ -1,110 +1,137 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            Templates
+        </h2>
+    </x-slot>
 
-@section('title', 'Templates')
+    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Document Templates</h1>
+            @if (Auth::user()->hasRole('super_admin'))
+                <a href="{{ route('templates.create') }}"
+                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition">
+                    <i class="fas fa-plus mr-2"></i> Upload New Template
+                </a>
+            @endif
+        </div>
 
-@section('content')
-<div class="row mb-4">
-    <div class="col-12 d-flex justify-content-between align-items-center">
-        <h1>Document Templates</h1>
-        {{-- @if(Auth::user()->hasRole('super_admin')) --}}
-            <a href="{{ route('templates.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Upload New Template
-            </a>
-        {{-- @endif --}}
-    </div>
-</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @forelse($templates as $template)
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md flex flex-col h-full">
+                    <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
+                        <h5 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $template->title }}</h5>
+                        <span class="bg-blue-500 text-white text-xs font-medium px-2.5 py-0.5 rounded">
+                            {{ pathinfo($template->filename, PATHINFO_EXTENSION) }}
+                        </span>
+                    </div>
 
-<div class="row">
-    @forelse($templates as $template)
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card h-100 template-card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">{{ $template->title }}</h5>
-                    <span class="badge bg-primary">{{ pathinfo($template->filename, PATHINFO_EXTENSION) }}</span>
-                </div>
-                <div class="card-body">
-                    @if($template->description)
-                        <p class="card-text">{{ $template->description }}</p>
-                    @endif
-                    
-                    <div class="mb-3">
-                        <small class="text-muted">Placeholders:</small>
-                        <div class="d-flex flex-wrap mt-2">
-                            @foreach($template->placeholder_mapping as $placeholder)
-                                <span class="badge bg-light text-dark placeholder-badge">
-                                    {{ $placeholder }}
-                                </span>
-                            @endforeach
+                    <div class="p-4 flex-1">
+                        @if ($template->description)
+                            <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">{{ $template->description }}</p>
+                        @endif
+
+                        <div>
+                            <small class="text-gray-500 dark:text-gray-400 font-medium">Placeholders:</small>
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                @foreach ($template->placeholder_mapping as $placeholder)
+                                    <span
+                                        class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded">
+                                        {{ $placeholder }}
+                                    </span>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-footer">
-                    <div class="d-flex justify-content-between">
-                        <a href="{{ route('templates.show', $template) }}" class="btn btn-sm btn-outline-primary">
-                            <i class="fas fa-eye"></i> View Details
+
+                    <div
+                        class="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center space-x-2">
+                        <a href="{{ route('templates.show', $template) }}"
+                            class="text-sm px-3 py-1.5 border rounded-lg text-blue-600 border-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900 transition">
+                            <i class="fas fa-eye mr-1"></i> View Details
                         </a>
-                        
-                        {{-- @if(Auth::user()->hasRole('principal')) --}}
-                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#processModal{{ $template->id }}">
-                                <i class="fas fa-magic"></i> Process Document
-                            </button>
-                            
-                            <!-- Process Modal -->
-                            <div class="modal fade" id="processModal{{ $template->id }}" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Process Template: {{ $template->title }}</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                        @if (Auth::user()->hasRole('principal'))
+                            <div x-data="{ open: false }" class="relative">
+                                <button @click="open = true"
+                                    class="text-sm px-3 py-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
+                                    <i class="fas fa-magic mr-1"></i> Process Document
+                                </button>
+
+                                <!-- Modal -->
+                                <div x-show="open" x-cloak
+                                    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                                    <div @click.away="open = false"
+                                        class="bg-white dark:bg-gray-800 rounded-xl shadow-lg max-w-md w-full p-6">
+                                        <div class="flex justify-between items-center mb-4">
+                                            <h5 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                                                Process Template: {{ $template->title }}
+                                            </h5>
+                                            <button @click="open = false"
+                                                class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-xl">
+                                                &times;
+                                            </button>
                                         </div>
+
                                         <form action="{{ route('templates.preview', $template) }}" method="POST">
                                             @csrf
-                                            <div class="modal-body">
-                                                {{-- <input type="hidden" name="school_id" value="{{ Auth::user()->school_id }}"> --}}
-                                                <input type="hidden" name="school_id" value="1">
-                                                
-                                                <div class="mb-3">
-                                                    <label for="event_id" class="form-label">Select Event (Optional)</label>
-                                                    <select class="form-select" name="event_id" id="event_id">
-                                                        <option value="">No Event</option>
-                                                        {{-- @foreach(Auth::user()->school->events as $event)
-                                                            <option value="{{ $event->id }}">{{ $event->event_name }} ({{ $event->event_date->format('d/m/Y') }})</option>
-                                                        @endforeach --}}
-                                                    </select>
-                                                </div>
+                                            <input type="hidden" name="school_id" value="1" />
+
+                                            <div class="mb-4">
+                                                <label for="event_id"
+                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                    Select Event (Optional)
+                                                </label>
+                                                <select name="event_id" id="event_id"
+                                                    class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm">
+                                                    <option value="">No Event</option>
+                                                    {{-- @foreach (Auth::user()->school->events as $event)
+                                                    <option value="{{ $event->id }}">{{ $event->event_name }} ({{ $event->event_date->format('d/m/Y') }})</option>
+                                                @endforeach --}}
+                                                </select>
                                             </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                <button type="submit" class="btn btn-primary">Process Document</button>
+
+                                            <div class="flex justify-end gap-2">
+                                                <button type="button" @click="open = false"
+                                                    class="px-4 py-2 bg-gray-200 dark:bg-gray-600 dark:text-gray-100 text-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-500">
+                                                    Cancel
+                                                </button>
+                                                <button type="submit"
+                                                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                                                    Process Document
+                                                </button>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
                             </div>
-                        {{-- @endif --}}
-                        
-                        {{-- @if(Auth::user()->hasRole('super_admin')) --}}
-                            <form action="{{ route('templates.destroy', $template) }}" method="POST" class="d-inline">
+                        @endif
+
+                        @if (Auth::user()->hasRole('super_admin'))
+                            <form action="{{ route('templates.destroy', $template) }}" method="POST"
+                                onsubmit="return confirm('Are you sure you want to remove this template?')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to remove this template?')">
-                                    <i class="fas fa-trash-alt"></i> Remove
+                                <button type="submit"
+                                    class="text-sm px-3 py-1.5 border border-red-500 text-red-600 rounded-lg hover:bg-red-100 dark:hover:bg-red-900 transition">
+                                    <i class="fas fa-trash-alt mr-1"></i> Remove
                                 </button>
                             </form>
-                        {{-- @endif --}}
+                        @endif
                     </div>
                 </div>
-            </div>
+            @empty
+                <div class="col-span-3">
+                    <div class="bg-blue-50 dark:bg-gray-800 text-blue-700 dark:text-blue-300 p-4 rounded-lg text-sm">
+                        <i class="fas fa-info-circle mr-1"></i> No templates available.
+                        @if (Auth::user()->hasRole('super_admin'))
+                            <a href="{{ route('templates.create') }}"
+                                class="underline hover:text-blue-900 dark:hover:text-blue-400 ml-1">Upload a new
+                                template</a>.
+                        @endif
+                    </div>
+                </div>
+            @endforelse
         </div>
-    @empty
-        <div class="col-12">
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i> No templates available.
-                {{-- @if(Auth::user()->hasRole('super_admin')) --}}
-                    <a href="{{ route('templates.create') }}" class="alert-link">Upload a new template</a>.
-                {{-- @endif --}}
-            </div>
-        </div>
-    @endforelse
-</div>
-@endsection
+    </div>
+</x-app-layout>
