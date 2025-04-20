@@ -22,20 +22,18 @@ Route::middleware('auth')->group(function () {
 });
 
 
-// Route::middleware(['auth'])->group(function () {
-    // Template routes (Super Admin access)
+Route::middleware(['auth'])->group(function () {
     Route::resource('templates', TemplateDocumentController::class)
         ->except(['edit', 'update']);
     
     Route::post('templates/{template}/preview', [TemplateDocumentController::class, 'preview'])
         ->name('templates.preview');
     
-    // Processed document routes (Principal access)
     Route::resource('processed', ProcessedDocumentController::class)
         ->only(['index', 'edit', 'update']);
     
     Route::get('processed/{document}/export', [ProcessedDocumentController::class, 'export'])
         ->name('processed.export');
-// });
+});
 
 require __DIR__.'/auth.php';

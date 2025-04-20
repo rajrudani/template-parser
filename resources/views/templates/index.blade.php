@@ -89,10 +89,6 @@
                                             </div>
 
                                             <div class="flex justify-end gap-2">
-                                                <button type="button" @click="open = false"
-                                                    class="px-4 py-2 bg-gray-200 dark:bg-gray-600 dark:text-gray-100 text-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-500">
-                                                    Cancel
-                                                </button>
                                                 <button type="submit"
                                                     class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                                                     Process Document

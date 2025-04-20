@@ -66,53 +66,6 @@
                 @endif
             </div>
 
-            @if (Auth::user()->hasRole('principal'))
-                <div>
-                    <button type="button"
-                        class="w-full sm:w-auto px-5 py-2.5 bg-green-600 text-white text-sm font-medium rounded shadow hover:bg-green-700 transition"
-                        data-bs-toggle="modal" data-bs-target="#processModal">
-                        <i class="fas fa-magic mr-2"></i> Process Template for My School
-                    </button>
-                </div>
-
-                <div class="modal fade" id="processModal" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <form action="{{ route('templates.preview', $template) }}" method="POST"
-                            class="modal-content">
-                            @csrf
-                            <div class="modal-header">
-                                <h5 class="modal-title">Process Template: {{ $template->title }}</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body space-y-4">
-                                <input type="hidden" name="school_id" value="1">
-                                {{-- <input type="hidden" name="school_id" value="{{ Auth::user()->school_id }}"> --}}
-
-                                <div>
-                                    <label for="event_id" class="block text-sm font-medium text-gray-700">Select Event
-                                        (Optional)</label>
-                                    <select id="event_id" name="event_id"
-                                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm text-sm">
-                                        <option value="">No Event</option>
-                                        {{-- @foreach (Auth::user()->school->events as $event)
-                                        <option value="{{ $event->id }}">{{ $event->event_name }} ({{ $event->event_date->format('d/m/Y') }})</option>
-                                    @endforeach --}}
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="modal-footer flex justify-end gap-2 px-4 py-3">
-                                <button type="button" class="px-4 py-2 bg-gray-200 rounded text-sm hover:bg-gray-300"
-                                    data-bs-dismiss="modal">Cancel</button>
-                                <button type="submit"
-                                    class="px-4 py-2 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700">Process
-                                    Document</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            @endif
-
             <div class="bg-white shadow rounded-lg p-6 space-y-6">
                 <div>
                     <h3 class="text-sm font-semibold text-gray-600 mb-3">Standard Placeholders</h3>

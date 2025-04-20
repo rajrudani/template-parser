@@ -19,8 +19,6 @@ class TemplateDocumentController extends Controller
     public function __construct(DocumentParserService $parserService)
     {
         $this->parserService = $parserService;
-        // $this->middleware('auth');
-        // $this->middleware('role:super_admin')->only(['store', 'destroy']);
     }
     
     /**
