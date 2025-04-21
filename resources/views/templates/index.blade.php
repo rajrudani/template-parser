@@ -82,9 +82,10 @@
                                                 <select name="event_id" id="event_id"
                                                     class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm">
                                                     <option value="">No Event</option>
-                                                    {{-- @foreach (Auth::user()->school->events as $event)
-                                                    <option value="{{ $event->id }}">{{ $event->event_name }} ({{ $event->event_date->format('d/m/Y') }})</option>
-                                                @endforeach --}}
+                                                    @foreach (Auth::user()->school->events as $event)
+                                                        <option value="{{ $event->id }}">{{ $event->event_name }}
+                                                            ({{ $event->event_date->format('d/m/Y') }})</option>
+                                                    @endforeach
                                                 </select>
                                             </div>
 
