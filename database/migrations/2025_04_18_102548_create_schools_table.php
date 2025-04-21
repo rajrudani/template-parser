@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('address')->nullable();
-            $table->string('affiliation_no')->nullable();
-            $table->string('school_code')->nullable();
-            $table->string('email')->nullable();
+            $table->string('affiliation_no')->unique();
+            $table->string('school_code')->unique();
+            $table->string('email')->unique();
             $table->string('contact')->nullable();
             $table->string('website')->nullable();
-            $table->string('principal_name')->nullable();
+            $table->foreignId('principal_id')->constrained('users');
             $table->timestamps();
         });
     }

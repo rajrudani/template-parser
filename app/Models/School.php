@@ -11,7 +11,7 @@ class School extends Model
 
     protected $fillable = [
         'name', 'address', 'affiliation_no', 'school_code', 
-        'email', 'contact', 'website', 'principal_name'
+        'email', 'contact', 'website', 'principal_id'
     ];
 
     public function events()
